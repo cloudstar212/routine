@@ -402,7 +402,7 @@ function migrate(o){
   return o;
 }
 let state=seed();
-const ui={tab:'today',sel:todayKey(),order:false,drawer:false,catFilter:'all',statView:'week',statAnchor:todayKey()};
+const ui={tab:'today',sel:todayKey(),order:false,drawer:false,catFilter:'all',statView:'month',statAnchor:todayKey()};
 const remote={ref:null,status:'local',err:''};
 
 function loadLocal(){try{const s=localStorage.getItem(LS);if(s) return JSON.parse(s)}catch(e){}return null}
@@ -705,7 +705,7 @@ function viewStats(){
   const greens=rates.filter(x=>level(x.r)==='go').length;
   const st=streaks();
   const periodChecks=ds.reduce((s,k)=>s+Object.keys((state.days[k]||{}).checks||{}).length,0);
-  let h=`<div class="pnav"><div class="seg"><button class="${ui.statView==='week'?'on':''}" data-a="sv" data-id="week">주간</button><button class="${ui.statView==='month'?'on':''}" data-a="sv" data-id="month">월간</button></div>
+  let h=`<div class="pnav"><div class="seg"><button class="${ui.statView==='month'?'on':''}" data-a="sv" data-id="month">월간</button><button class="${ui.statView==='week'?'on':''}" data-a="sv" data-id="week">주간</button></div>
     <div class="inline"><button class="icon-btn" data-a="sp" data-id="-1" aria-label="이전">${SVG.l}</button><span class="lbl">${periodLabel(ds)}</span><button class="icon-btn" data-a="sp" data-id="1" aria-label="다음">${SVG.r}</button></div></div>`;
   h+=`<div class="tiles"><div class="tile"><div class="k">평균 달성률</div><div class="v">${avg===null?'–':avg}<small>%</small></div></div>
     <div class="tile"><div class="k">초록불 켜진 날</div><div class="v">${greens}<small>일</small></div></div>
