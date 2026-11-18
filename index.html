@@ -793,7 +793,7 @@ function settingsSheet(){
     <button class="toggle" data-a="dtb"><span class="lbl">완료한 투두를 목록 아래로</span><span class="switch ${state.settings.doneToBottom?'on':''}" aria-hidden="true"></span></button>
     <div class="fl"><span class="lbl">휴가</span><span class="hint">휴가 기간에는 루틴 체크가 면제되고 연속 기록도 끊기지 않아요.</span><div class="list">${state.vacations.map((v,i)=>`<div class="lrow"><span style="flex:1">${fmtShort(v.from)} – ${fmtShort(v.to)}</span><button class="btn sm danger" data-a="vac-del" data-id="${i}">삭제</button></div>`).join('')}</div>
       <form class="lrow" data-f="vac-add"><input class="field" type="date" id="vf-from" required aria-label="시작일"><span>–</span><input class="field" type="date" id="vf-to" required aria-label="종료일"><button class="btn" type="submit">추가</button></form></div>
-    <div class="fl"><span class="lbl">백업</span><div class="opts"><button class="btn sm primary" data-a="export-file">백업 파일 저장</button><label class="btn sm" for="imp-file" style="cursor:pointer">백업 파일 불러오기</label><input type="file" id="imp-file" accept=".json,application/json" hidden><button class="btn sm" data-a="export">텍스트로 복사</button></div>
+    <div class="fl"><span class="lbl">백업</span><span class="hint">${state.flags.lastBackup?`마지막 백업: ${(()=>{const d=Math.floor((Date.now()-state.flags.lastBackup)/864e5);return d<1?'오늘':d+'일 전'})()}.`:'아직 백업 파일을 저장한 적이 없어요.'} 저장한 파일을 다른 기기의 하루틴에서 불러오면 기록이 그대로 옮겨져요.</span><div class="opts"><button class="btn sm primary" data-a="export-file">백업 파일 저장</button><label class="btn sm" for="imp-file" style="cursor:pointer">백업 파일 불러오기</label><input type="file" id="imp-file" accept=".json,application/json" hidden><button class="btn sm" data-a="export">텍스트로 복사</button></div>
       <textarea class="field" id="imp" rows="3" placeholder="복사해 둔 백업을 여기에 붙여넣고 ‘불러오기’를 누르세요" aria-label="백업 붙여넣기"></textarea>
       <div class="opts"><button class="btn sm" data-a="import">불러오기</button><button class="btn sm danger" data-a="reset" data-orig="모든 기록 지우기">모든 기록 지우기</button></div></div>
     <span class="note">하루틴 v1.0 · 기록은 이 휴대폰 안에만 저장되고 어디로도 전송되지 않아요.</span>`);
@@ -884,8 +884,8 @@ const A={
     if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,()=>{ta.value=txt;ta.select();toast('자동 복사가 막혀 있어요. 아래 내용을 직접 복사하세요')})}else{ta.value=txt;ta.select();toast('아래 내용을 직접 복사하세요')}},
   'export-file':async()=>{
     const name=`harutin-backup-${todayKey()}.json`,blob=new Blob([JSON.stringify(state)],{type:'application/json'});
-    try{const f=new File([blob],name,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'하루틴 백업'});return}}catch(e){if(e&&e.name==='AbortError') return}
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast('백업 파일을 저장했어요');
+    try{const f=new File([blob],name,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'하루틴 백업'});state.flags.lastBackup=Date.now();commit({render:false});settingsSheet();return}}catch(e){if(e&&e.name==='AbortError') return}
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);state.flags.lastBackup=Date.now();commit({render:false});settingsSheet();toast('백업 파일을 저장했어요');
   },
   'import':()=>{const ta=document.getElementById('imp');let o=null;try{o=JSON.parse(ta.value)}catch(e){}
     if(!o||!Array.isArray(o.routines)){toast('백업 형식이 아니에요. 복사한 내용을 그대로 붙여넣어 주세요');return}
