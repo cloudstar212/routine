@@ -1,0 +1,21 @@
+{
+  "name": "하루틴 - 신호등 루틴 플래너",
+  "short_name": "하루틴",
+  "description": "신호등으로 보는 하루 루틴·투두·스케줄 플래너",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EDF1EC",
+  "theme_color": "#2E5E4E",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "오늘 루틴", "url": "./#today"},
+    {"name": "투두", "url": "./#todo"}
+  ]
+}
