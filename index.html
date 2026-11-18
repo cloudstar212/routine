@@ -31,8 +31,8 @@
   --accent-soft:#DFEBE3;
   --go:#22A157;
   --go-soft:#DDF3E5;
-  --wait:#E3A118;
-  --wait-soft:#FBF0D6;
+  --wait:#EE7F1C;
+  --wait-soft:#FDEBDB;
   --stop:#D9463E;
   --stop-soft:#F9E0DE;
   --off:#C7CFC6;
@@ -48,7 +48,7 @@
   :root:not([data-theme="light"]){
     --bg:#101412;--surface:#191F1C;--surface-2:#202723;--ink:#E6ECE8;--muted:#9AA69F;--line:#2B332F;
     --accent:#8ACDB0;--accent-ink:#0E1914;--accent-soft:#213229;
-    --go:#3CC673;--go-soft:#1C3326;--wait:#F0B93A;--wait-soft:#372D16;--stop:#F06A5F;--stop-soft:#3A1F1D;--off:#3A433E;--vac:#7EA7EE;
+    --go:#3CC673;--go-soft:#1C3326;--wait:#FF9A3D;--wait-soft:#3A2614;--stop:#F06A5F;--stop-soft:#3A1F1D;--off:#3A433E;--vac:#7EA7EE;
     --housing:#0B0E0C;--shadow:0 1px 2px rgba(0,0,0,.3);
     color-scheme:dark;
   }
@@ -56,7 +56,7 @@
 :root[data-theme="dark"]{
   --bg:#101412;--surface:#191F1C;--surface-2:#202723;--ink:#E6ECE8;--muted:#9AA69F;--line:#2B332F;
   --accent:#8ACDB0;--accent-ink:#0E1914;--accent-soft:#213229;
-  --go:#3CC673;--go-soft:#1C3326;--wait:#F0B93A;--wait-soft:#372D16;--stop:#F06A5F;--stop-soft:#3A1F1D;--off:#3A433E;--vac:#7EA7EE;
+  --go:#3CC673;--go-soft:#1C3326;--wait:#FF9A3D;--wait-soft:#3A2614;--stop:#F06A5F;--stop-soft:#3A1F1D;--off:#3A433E;--vac:#7EA7EE;
   --housing:#0B0E0C;--shadow:0 1px 2px rgba(0,0,0,.3);
   color-scheme:dark;
 }
@@ -97,13 +97,16 @@ main{flex:1;padding:6px 16px 104px;display:flex;flex-direction:column;gap:14px}
 .link{color:var(--accent);font-weight:600;font-size:13px}
 
 /* signal */
-.signal{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
-.housing{background:var(--housing);border-radius:20px;padding:9px 8px;display:flex;flex-direction:column;gap:7px}
-.lamp{width:24px;height:24px;border-radius:50%;background:#2E3833;transition:background .3s,box-shadow .3s}
-.lamp.stop.on{background:#F25A50;box-shadow:0 0 14px #F25A50}
-.lamp.wait.on{background:#F5BE36;box-shadow:0 0 14px #F5BE36}
-.lamp.go.on{background:#37CF78;box-shadow:0 0 16px #37CF78}
-.housing.vac .lamp{background:#3E5A86}
+.signal{display:flex;flex-direction:column;gap:10px}
+.sig-top{display:flex;align-items:center;gap:14px}
+.housing{background:var(--housing);border-radius:16px;padding:6px;display:inline-flex;gap:6px;flex:none}
+.lamp{width:44px;height:44px;border-radius:11px;background:#28312C;display:grid;place-items:center;transition:background .3s}
+.lamp svg{width:32px;height:32px}
+.lamp .fg{fill:#3B4741;stroke:#3B4741;transition:fill .3s,stroke .3s}
+.lamp.stop.on{background:#3A1F1C}.lamp.stop.on .fg{fill:#F25A50;stroke:#F25A50}
+.lamp.wait.on{background:#3A2614}.lamp.wait.on .fg{fill:#FF8A2B;stroke:#FF8A2B}
+.lamp.go.on{background:#173323}.lamp.go.on .fg{fill:#37CF78;stroke:#37CF78}
+.housing.vac .lamp{background:#1F2B3D}.housing.vac .lamp .fg{fill:#3E5A86;stroke:#3E5A86}
 .pct{font-family:var(--font-display);font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
 .pct small{font-size:20px;margin-left:2px;color:var(--muted)}
 .sig-msg{font-weight:600;margin-top:6px}
@@ -322,6 +325,11 @@ const SVG={
   journal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v16H6.5A1.5 1.5 0 0 0 5 20.5z"/><path d="M5 20.5A1.5 1.5 0 0 0 6.5 22H19M9 8h6M9 12h4"/></svg>',
   stats:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'
 };
+const PED={
+  stop:'<circle class="fg" cx="12" cy="4.2" r="2.4" stroke="none"/><g class="fg" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8.2v6" stroke-width="4.2"/><path d="M9.6 8.8l-.4 5.4M14.4 8.8l.4 5.4" stroke-width="2.3"/><path d="M10.9 14.6l-.1 6.6M13.1 14.6l.1 6.6" stroke-width="2.6"/></g>',
+  wait:'<circle class="fg" cx="13" cy="4.1" r="2.4" stroke="none"/><g class="fg" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 8.2l-.8 6" stroke-width="4.2"/><path d="M12.4 9.2l2.6 4M11.8 9.2l-2.6 3.8" stroke-width="2.3"/><path d="M11.9 14.4l2.2 3.2.5 3.6M11.4 14.6l-1.8 3.2-1.3 3.4" stroke-width="2.6"/></g>',
+  go:'<circle class="fg" cx="15" cy="3.9" r="2.4" stroke="none"/><g class="fg" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8l-2.6 5.6" stroke-width="4.2"/><path d="M13.8 9.2l3 1.8 2-1.8M13 9.2l-3 .8-2 2.6" stroke-width="2.3"/><path d="M11.8 13.8l4 2-.7 5M11.2 14l-2.6 3.8-4 .8" stroke-width="2.6"/></g>'
+};
 const TABS=[['today','루틴'],['todo','투두'],['schedule','스케줄'],['journal','기록'],['stats','통계']];
 
 /* ---------- state ---------- */
@@ -510,9 +518,12 @@ function viewToday(){
   else if(lv==='go'){msg=live.done===live.total?'모든 루틴을 끝냈어요':'초록불이 켜졌어요';sub=`${live.total}개 중 ${live.done}개 완료 · 완벽하지 않아도 충분해요`}
   else{msg=`초록불까지 ${need}개 남았어요`;sub=`${live.total}개 중 ${live.done}개 완료 · ${g}%면 초록불`}
   const lampOn=x=>(!vac&&!future&&live.total&&lv===x)?'on':'';
+  const lamp=x=>`<span class="lamp ${x} ${lampOn(x)}"><svg viewBox="0 0 24 24" aria-hidden="true">${PED[x]}</svg></span>`;
+  const lampName={stop:'빨간불',wait:'주황불',go:'초록불'}[lv]||'꺼짐';
   let h=`<section class="card signal" aria-label="오늘의 루틴 신호등">
-    <div class="housing ${vac?'vac':''}" aria-hidden="true"><span class="lamp stop ${lampOn('stop')}"></span><span class="lamp wait ${lampOn('wait')}"></span><span class="lamp go ${lampOn('go')}"></span></div>
-    <div><div class="pct">${vac||future||!live.total?'–':pct}<small>%</small></div><div class="sig-msg">${msg}</div><div class="sig-sub">${sub}</div>
+    <div class="sig-top"><div class="housing ${vac?'vac':''}" role="img" aria-label="${vac?'휴가':lampName}">${lamp('stop')}${lamp('wait')}${lamp('go')}</div>
+    <div class="pct">${vac||future||!live.total?'–':pct}<small>%</small></div></div>
+    <div><div class="sig-msg">${msg}</div><div class="sig-sub">${sub}</div>
     <div class="meter"><i class="${future||vac?'':lv}" style="width:${vac||future?0:pct}%"></i><span class="mark" style="left:${g}%"></span></div></div></section>`;
   h+=`<div class="modes" role="tablist" aria-label="루틴 모드">${state.modes.map(m=>`<button class="chip ${m.id===state.activeMode?'on':''}" data-a="mode" data-id="${m.id}" role="tab" aria-selected="${m.id===state.activeMode}">${esc(m.name)}</button>`).join('')}${state.modes.length<10?'<button class="chip add" data-a="settings">+ 모드</button>':''}</div>`;
   if(state.flags.example) h+=`<div class="banner"><div><b>예시 루틴과 할 일이 들어 있어요.</b> 그대로 써도 되고, 추천 루틴에서 주제를 골라 새로 시작해도 돼요.</div><div class="row"><button class="btn sm primary" data-a="tpl">추천 루틴 보기</button><button class="btn sm" data-a="clear-example">예시 모두 지우기</button><button class="btn sm" data-a="keep-example">그대로 쓰기</button></div></div>`;
@@ -636,7 +647,7 @@ function viewStats(){
     <div class="tile"><div class="k">연속 초록불</div><div class="v">${st.cur}<small>일 · 최고 ${st.best}일</small></div></div>
     <div class="tile"><div class="k">이 기간 체크</div><div class="v">${periodChecks}<small>개</small></div></div></div>`;
   h+=`<section class="card fl"><span class="lbl">${ui.statView==='week'?'요일별 달성률':'달력으로 보는 신호등'}</span>${ui.statView==='week'?weekChart(rates,g):monthCal(ds,T)}
-    <span class="note">초록 ${g}% 이상 · 노랑 30% 이상 · 빨강 30% 미만${state.vacations.length?' · 파랑 휴가':''}</span></section>`;
+    <span class="note">초록 ${g}% 이상 · 주황 30% 이상 · 빨강 30% 미만${state.vacations.length?' · 파랑 휴가':''}</span></section>`;
   // per-routine
   const rs=state.routines.filter(r=>r.modeId===state.activeMode||ds.some(k=>{const d=state.days[k];return d&&Array.isArray(d.only)&&d.only.includes(r.id)}));
   const rows=rs.map(r=>{let S=0,D=0;ds.forEach(k=>{const d=state.days[k]||{};const hist=Array.isArray(d.only);if(k>T||onVacation(k)) return;if(hist){if(!d.only.includes(r.id)) return}else{if(k<state.startedAt||!r.days.includes(parseKey(k).getDay())) return}if(d.rest&&d.rest[r.id]) return;S++;if(d.checks&&d.checks[r.id]) D++});return {r,S,D,p:S?D/S:0}}).filter(x=>x.S).sort((a,b)=>b.p-a.p);
