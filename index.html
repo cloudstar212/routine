@@ -83,24 +83,24 @@ html[data-skin="zebra"] .grp-h{padding:2px 2px}
 .sk-dots{display:flex;gap:4px}
 .sk-dots i{width:13px;height:13px;border-radius:50%;border:1px solid rgba(128,128,128,.45)}
 .plant{display:flex;align-items:center;gap:14px;padding:12px 16px;width:100%;text-align:left}
-.plant svg{width:74px;height:89px;flex:none;overflow:visible}
+.plant svg{width:88px;height:88px;flex:none;overflow:visible}
 .plant .pi{flex:1;min-width:0}
 .plant .pn{font-family:var(--font-display);font-weight:var(--dw,400);font-size:calc(19px * var(--ds,1));line-height:1.2}
 .plant .pst{font-size:13px;font-weight:600;color:var(--go)}
-.plant .ps{font-size:12px;color:var(--muted);margin-top:2px}
+.plant .ps{font-size:12px;color:var(--muted);margin-top:2px;word-break:keep-all}
 .pbar{height:6px;border-radius:9px;background:var(--surface-2);margin-top:8px;overflow:hidden}
 .pbar i{display:block;height:100%;background:var(--go);border-radius:9px}
 @keyframes grow{0%{transform:scale(.8)}55%{transform:scale(1.12)}100%{transform:scale(1)}}
 svg.grew{animation:grow .8s ease-out;transform-origin:50% 100%}
 .pstages{display:flex;flex-direction:column;gap:6px}
 .pstage{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:12px;background:var(--surface-2)}
-.pstage svg{width:34px;height:41px;flex:none}
+.pstage svg{width:44px;height:44px;flex:none}
 .pstage.lock{opacity:.45}
 .pstage.cur{outline:2px solid var(--go)}
 .pstage b{flex:1;font-weight:600;font-size:14px}
 .pstage span{font-size:12px;color:var(--muted)}
 .pbig{display:flex;justify-content:center}
-.pbig svg{width:150px;height:180px}
+.pbig svg{width:180px;height:180px}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:var(--body-size,15px);line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -887,48 +887,72 @@ function settingsSheet(){
 }
 
 /* ---------- plant ---------- */
-const PLANT=[{n:'씨앗',at:0},{n:'싹',at:10},{n:'새싹',at:25},{n:'어린 잎',at:50},{n:'쑥쑥 줄기',at:80},{n:'무성한 잎',at:120},{n:'꽃봉오리',at:170},{n:'꽃',at:230},{n:'열매',at:300},{n:'나무',at:400}];
+const PLANT=[{n:'씨앗',at:0},{n:'싹',at:10},{n:'새싹',at:25},{n:'어린 잎',at:50},{n:'쑥쑥 줄기',at:80},{n:'무성한 잎',at:120},{n:'꽃봉오리',at:170},{n:'꽃',at:230},{n:'열매',at:300},{n:'어린 나무',at:400},{n:'나무',at:520},{n:'꽃 피는 나무',at:660},{n:'열매 나무',at:820},{n:'새가 찾아온 나무',at:1000},{n:'작은 정원',at:1250},{n:'숲',at:1500}];
+function plantSVG(st,cls){
+  const C={l:'#6BCB84',m:'#46AE62',d:'#2F8A4C',stem:'#3E9E58',trunk:'#8A5A36',trunkD:'#6E4428',pink:'#FF9EC4',pinkD:'#F07AAB',red:'#E5484D',yel:'#FFD23F'};
+  const leaf=(x,y,a,s,c,vein)=>`<g transform="translate(${x} ${y}) rotate(${a}) scale(${s})"><path d="M0 0C5-8 17-10 26-4 18 4 6 5 0 0Z" fill="${c}"/>${vein===false?'':`<path d="M1 0Q13-2.5 24-4" stroke="rgba(0,0,0,.14)" stroke-width="1.1" fill="none"/>`}</g>`;
+  const coty=(x,y,a,c)=>`<ellipse cx="${x}" cy="${y}" rx="5.5" ry="3" transform="rotate(${a} ${x} ${y})" fill="${c}"/>`;
+  const flower=(x,y,r)=>{let g='';for(let i=0;i<5;i++){const t=i*2*Math.PI/5-Math.PI/2;g+=`<circle cx="${(x+r*Math.cos(t)).toFixed(1)}" cy="${(y+r*Math.sin(t)).toFixed(1)}" r="${(r*.78).toFixed(1)}" fill="${C.pink}"/>`}return g+`<circle cx="${x}" cy="${y}" r="${(r*.62).toFixed(1)}" fill="${C.yel}"/>`};
+  const bud=(x,y)=>`<g transform="translate(${x} ${y}) scale(1.6)"><path d="M0 6q-3.4-5 0-11 3.4 6 0 11z" fill="${C.pinkD}"/><path d="M-1 -3q1-1 2 0" stroke="#FFC6DC" stroke-width=".9" fill="none"/><path d="M-3 5.5q3 2 6 0" stroke="${C.m}" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>`;
+  const berry=(x,y)=>`<circle cx="${x}" cy="${y}" r="3.2" fill="${C.red}"/><circle cx="${x-1}" cy="${y-1.1}" r="1" fill="#FFB3B5"/>`;
+  const pot=(s=1)=>`<g transform="translate(60 118) scale(${s}) translate(-60 -118)"><ellipse cx="60" cy="118" rx="27" ry="2.6" fill="rgba(0,0,0,.18)"/><path d="M39 92H81L77 113Q76 116.5 72.5 116.5H47.5Q44 116.5 43 113Z" fill="#D9845A"/><path d="M41 98H79" stroke="#C4703F" stroke-width="1.6"/><rect x="34" y="84" width="52" height="10" rx="4" fill="#E89A6C"/><rect x="37.5" y="86" width="18" height="2.6" rx="1.3" fill="#F6BC95"/><ellipse cx="60" cy="86" rx="22" ry="3.4" fill="#5A3B26"/></g>`;
+  const ground=()=>`<path d="M0 104Q30 98 60 101T120 100V120H0Z" fill="#7CC36B"/><path d="M0 110Q40 106 70 109T120 108V120H0Z" fill="#5FAE52"/>`;
+  const tree=(x,b,s,o={})=>{
+    let g=`<g transform="translate(${x} ${b}) scale(${s})">`;
+    g+=`<path d="M-3 0C-2-14-3-26 0-40 3-26 2-14 3 0Z" fill="${C.trunk}"/><path d="M0-22L-10-31M1-28L10-36" stroke="${C.trunk}" stroke-width="3" stroke-linecap="round"/><path d="M1 0C2-14 1.5-26 0-40" stroke="${C.trunkD}" stroke-width="1.4" fill="none"/>`;
+    g+=`<circle cx="0" cy="-50" r="19" fill="${C.d}"/><circle cx="-15" cy="-40" r="13" fill="${C.m}"/><circle cx="15" cy="-41" r="13" fill="${C.m}"/><circle cx="-6" cy="-60" r="13" fill="${C.m}"/><circle cx="9" cy="-58" r="12" fill="${C.l}"/><circle cx="-11" cy="-52" r="9" fill="${C.l}"/><circle cx="-4" cy="-64" r="5" fill="#8FDCA0"/>`;
+    if(o.blossom) [[-14,-44],[-4,-58],[9,-62],[14,-46],[-17,-55],[3,-48],[19,-38],[-9,-36],[8,-38]].forEach(([a,c])=>{g+=`<circle cx="${a}" cy="${c}" r="3.4" fill="${C.pink}"/><circle cx="${a}" cy="${c}" r="1.3" fill="#FFF0F6"/>`});
+    if(o.fruit) [[-13,-42],[6,-58],[14,-45],[-5,-50],[18,-36],[-18,-50],[2,-40]].slice(0,o.fruit).forEach(([a,c])=>{g+=berry(a,c)});
+    if(o.bird) g+=`<g transform="translate(13 -33)"><path d="M-12 1H6" stroke="${C.trunkD}" stroke-width="2" stroke-linecap="round"/><ellipse cx="0" cy="-4" rx="5.5" ry="4.5" fill="#FFC93C"/><circle cx="3.6" cy="-7.4" r="3.4" fill="#FFC93C"/><path d="M6.6-7.6l3 1-3 1z" fill="#F08A24"/><circle cx="4.4" cy="-8.2" r=".9" fill="#2A2A2A"/><path d="M-5-4q-4 1-5-2" stroke="#E8A91F" stroke-width="2" fill="none" stroke-linecap="round"/></g>`;
+    return g+`</g>`;
+  };
+  const bush=(o={})=>{let g=`<path d="M60 86Q58 72 50 60M60 86Q61 68 61 52M60 86Q63 72 71 60" stroke="${C.stem}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    [[48,64,-175,.95,C.d],[73,62,-10,.95,C.d],[54,56,-140,.9,C.m],[66,55,-40,.9,C.m],[60,50,-95,.85,C.l],[50,60,150,.7,C.m],[71,59,30,.7,C.m],[47,70,-200,.75,C.l],[74,70,20,.75,C.l]].forEach(l=>{g+=leaf(...l)});
+    if(o.buds) g+=bud(50,46)+bud(71,44);
+    if(o.flowers) g+=flower(48,47,4.6)+flower(61,38,5.2)+flower(73,46,4.6);
+    if(o.berries) g+=berry(50,66)+berry(54,69)+berry(70,65)+berry(66,69);
+    return g};
+  let g='';
+  switch(st){
+    case 0: g=pot()+`<ellipse cx="60" cy="83" rx="5" ry="3.6" transform="rotate(-18 60 83)" fill="#A8744A"/><path d="M57.5 81.5q2.5-2 5 0" stroke="#5A3B26" stroke-width="1" fill="none"/><path d="M73 70l1.2 3 3 1.2-3 1.2-1.2 3-1.2-3-3-1.2 3-1.2z" fill="${C.yel}"/>`;break;
+    case 1: g=pot()+`<path d="M60 86Q59.5 80 60.5 75" stroke="${C.stem}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`+coty(55.5,74.5,-24,C.l)+coty(65.5,73.5,22,C.m);break;
+    case 2: g=pot()+`<path d="M60 86Q58.5 76 60.5 64" stroke="${C.stem}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`+coty(55,79,-18,'#9EDDAA')+coty(65.5,78,18,'#9EDDAA')+leaf(60.5,65,-150,.62,C.l)+leaf(60.5,64,-32,.68,C.m);break;
+    case 3: g=pot()+`<path d="M60 86Q57 72 61 56" stroke="${C.stem}" stroke-width="2.8" fill="none" stroke-linecap="round"/>`+leaf(59,77,-165,.62,C.m)+leaf(59,73,-15,.7,C.l)+leaf(60,65,-150,.75,C.l)+leaf(60.5,61,-30,.8,C.m)+leaf(61,57,-110,.5,C.l);break;
+    case 4: g=pot()+`<path d="M60 86Q55 70 61 58T63 42" stroke="${C.stem}" stroke-width="3" fill="none" stroke-linecap="round"/>`+leaf(58,78,-170,.7,C.d)+leaf(58,73,-12,.78,C.m)+leaf(59,64,-155,.85,C.m)+leaf(61,58,-25,.9,C.l)+leaf(62,50,-150,.78,C.l)+leaf(62.5,46,-40,.7,C.m)+leaf(63,43,-100,.5,C.l);break;
+    case 5: g=pot()+bush();break;
+    case 6: g=pot()+bush({buds:1});break;
+    case 7: g=pot()+bush({flowers:1});break;
+    case 8: g=pot()+bush({flowers:1,berries:1});break;
+    case 9: g=pot()+tree(60,86,.62);break;
+    case 10: g=pot()+tree(60,86,.78,{fruit:2});break;
+    case 11: g=pot()+tree(60,86,.82,{blossom:1});break;
+    case 12: g=pot()+tree(60,86,.84,{fruit:7})+berry(74,84);break;
+    case 13: g=ground()+tree(60,104,1.05,{fruit:4,bird:1});break;
+    case 14: g=ground()+`<path d="M78 98v-10M86 98v-10M94 98v-10M102 98v-10M110 98v-10M76 91h36M76 95h36" stroke="#E7D3B0" stroke-width="2.4" stroke-linecap="round"/>`+tree(42,104,.95,{fruit:3})+`<circle cx="88" cy="98" r="9" fill="${C.m}"/><circle cx="98" cy="99" r="8" fill="${C.l}"/>`+flower(82,104,2.6)+flower(104,106,2.6)+flower(20,106,2.4);break;
+    default: g=ground()+tree(28,104,.72,{fruit:2})+tree(94,104,.78,{blossom:1})+tree(60,106,1.02,{fruit:4,bird:1})+flower(14,108,2.4)+flower(108,108,2.4);
+  }
+  return `<svg viewBox="0 0 120 120" class="${cls||''}" aria-hidden="true">${g}</svg>`;
+}
 function totalChecks(){let n=0;for(const k in state.days){const c=state.days[k].checks;if(c) n+=Object.keys(c).length}return n}
 function stageOf(n){let st=0;PLANT.forEach((p,i)=>{if(n>=p.at) st=i});return st}
 function josaIGa(w){const c=w.charCodeAt(w.length-1);return w+((c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28)?'이':'가')}
 function plantName(){return (state.settings.plantName||'새싹이').slice(0,12)}
-function plantSVG(st,fx,cls){
-  const leaf=(y,dir,sz,c)=>`<path transform="translate(50 ${y}) scale(${dir*sz} ${sz})" d="M0 0C4-10 14-14 22-12 20-4 10 2 0 0Z" fill="${c}"/>`;
-  const L=[[],[[81,-1,.35],[81,1,.35]],[[75,-1,.6],[73,1,.7]],[[78,-1,.6],[76,1,.6],[67,-1,.7],[65,1,.75]],[[80,-1,.55],[76,1,.6],[70,-1,.7],[66,1,.7],[59,-1,.75],[57,1,.8]],[[80,-1,.55],[77,1,.6],[71,-1,.75],[67,1,.75],[61,-1,.85],[58,1,.85],[52,-1,.8],[50,1,.85]]];
-  const TOP=[86,79,71,63,55,47,45,44,44,44];
-  let g='';
-  if(st===0){g+=`<ellipse cx="50" cy="85" rx="5" ry="3.5" fill="#8A5A36"/><path d="M47.6 83.6q2.4-2 4.8 0" stroke="#5A3B26" stroke-width="1.1" fill="none"/>`}
-  else if(st<9){
-    const lv=L[Math.min(st,5)];
-    g+=`<path d="M50 88Q${st>=4?53:50.5} ${(88+TOP[st])/2} 50 ${TOP[st]}" stroke="#3FA45B" stroke-width="${st>=5?4:st>=3?3.2:2.6}" fill="none" stroke-linecap="round"/>`;
-    lv.forEach((l,i)=>{g+=leaf(l[0],l[1],l[2],i%2?'#3FA45B':'#59C173')});
-    if(st===6) g+=`<path d="M46 46q4 4 8 0" stroke="#3FA45B" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="40" rx="4.6" ry="7" fill="#F28AB2"/><path d="M50 34v12" stroke="#E36A98" stroke-width="1.2"/>`;
-    if(st>=7){for(let a=0;a<6;a++){const t=a*Math.PI/3;g+=`<circle cx="${(50+6.5*Math.cos(t)).toFixed(1)}" cy="${(40+6.5*Math.sin(t)).toFixed(1)}" r="5.4" fill="#FF8FB8"/>`}g+=`<circle cx="50" cy="40" r="4.4" fill="#FFD23F"/>`}
-    if(st===8) [[33,63],[67,59],[36,73]].forEach(([x,y])=>{g+=`<path d="M${x} ${y-3}v-3" stroke="#3FA45B" stroke-width="1.3"/><circle cx="${x}" cy="${y}" r="3.4" fill="#E5484D"/><circle cx="${x-1}" cy="${y-1}" r="1" fill="#FFB3B5"/>`});
-  }else{
-    g+=`<path d="M50 88C48 74 51 62 50 50M50 66l-9-8M50 60l10-9" stroke="#8A5A36" stroke-width="5.5" fill="none" stroke-linecap="round"/>`;
-    g+=`<circle cx="50" cy="34" r="20" fill="#3FA45B"/><circle cx="33" cy="44" r="14" fill="#59C173"/><circle cx="67" cy="44" r="14" fill="#59C173"/><circle cx="44" cy="22" r="11" fill="#59C173"/><circle cx="60" cy="24" r="10" fill="#4DB568"/>`;
-    [[38,36],[60,32],[48,48],[70,46],[30,48],[52,20]].slice(0,Math.max(1,fx)).forEach(([x,y])=>{g+=`<circle cx="${x}" cy="${y}" r="3.6" fill="#E5484D"/><circle cx="${x-1.1}" cy="${y-1.1}" r="1.1" fill="#FFB3B5"/>`});
-  }
-  const pot=`<ellipse cx="50" cy="88" rx="21" ry="4" fill="#5A3B26"/><rect x="25" y="86" width="50" height="8" rx="3" fill="#D98B58"/><path d="M29 94h42l-5 22H34z" fill="#C8794A"/><path d="M31 98h38" stroke="#B5683C" stroke-width="1.5"/>`;
-  return `<svg viewBox="0 0 100 120" class="${cls||''}" aria-hidden="true">${g}${pot}</svg>`;
-}
 function plantInfo(){
-  const n=totalChecks(),st=stageOf(n),fx=st===9?Math.min(6,1+Math.floor((n-400)/100)):0,nx=PLANT[st+1];
+  const n=totalChecks(),st=stageOf(n),nx=PLANT[st+1];
   const p=nx?(n-PLANT[st].at)/(nx.at-PLANT[st].at):1;
-  const next=nx?`다음 단계 '${nx.n}'까지 체크 ${nx.at-n}개`:`열매 ${fx}개 · 체크 100개마다 하나씩 더 열려요`;
-  return {n,st,fx,p,next};
+  const next=nx?`다음 단계 '${nx.n}'까지 체크 ${nx.at-n}개`:'마지막 단계까지 키웠어요';
+  return {n,st,p,next};
 }
 function plantCard(){
   const pi=plantInfo(),cls=ui.grew?'grew':'';ui.grew=false;
-  return `<button class="card plant" data-a="plant" aria-label="내 식물 ${esc(plantName())}, ${PLANT[pi.st].n} 단계">${plantSVG(pi.st,pi.fx,cls)}<span class="pi"><span class="pn">${esc(plantName())}</span> <span class="pst">${PLANT[pi.st].n}</span><span class="ps" style="display:block">지금까지 체크 ${pi.n}개 · ${pi.next}</span><span class="pbar" style="display:block"><i style="width:${Math.round(pi.p*100)}%"></i></span></span></button>`;
+  return `<button class="card plant" data-a="plant" aria-label="내 식물 ${esc(plantName())}, ${PLANT[pi.st].n} 단계">${plantSVG(pi.st,cls)}<span class="pi"><span class="pn">${esc(plantName())}</span> <span class="pst">${PLANT[pi.st].n}</span><span class="ps" style="display:block">지금까지 체크 ${pi.n}개 · ${pi.next}</span><span class="pbar" style="display:block"><i style="width:${Math.round(pi.p*100)}%"></i></span></span></button>`;
 }
 function plantSheet(){
   const pi=plantInfo();
-  openSheet('내 식물',`<div class="pbig">${plantSVG(pi.st,pi.fx)}</div>
+  openSheet('내 식물',`<div class="pbig">${plantSVG(pi.st)}</div>
     <div class="fl"><label for="pl-name">식물 이름</label><input class="field" id="pl-name" value="${esc(plantName())}" maxlength="12" data-in="plant-name"></div>
     <span class="note">루틴을 체크할 때마다 물을 한 번 준 셈이에요. 지금까지 체크 ${pi.n}개 · ${pi.next}</span>
-    <div class="pstages">${PLANT.map((p,i)=>`<div class="pstage ${i>pi.st?'lock':''} ${i===pi.st?'cur':''}">${plantSVG(i,i===9?1:0)}<b>${i+1}. ${p.n}</b><span>${i===0?'시작':`체크 ${p.at}개`}${i<=pi.st?' ✓':''}</span></div>`).join('')}</div>`);
+    <div class="pstages">${PLANT.map((p,i)=>`<div class="pstage ${i>pi.st?'lock':''} ${i===pi.st?'cur':''}">${plantSVG(i)}<b>${i+1}. ${p.n}</b><span>${i===0?'시작':`체크 ${p.at}개`}${i<=pi.st?' ✓':''}</span></div>`).join('')}</div>`);
 }
 
 /* ---------- confetti ---------- */
