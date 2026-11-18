@@ -82,6 +82,25 @@ html[data-skin="zebra"] .grp-h{padding:2px 2px}
 .skin small{font-size:11px;opacity:.75;font-family:"Noto Sans KR",sans-serif}
 .sk-dots{display:flex;gap:4px}
 .sk-dots i{width:13px;height:13px;border-radius:50%;border:1px solid rgba(128,128,128,.45)}
+.plant{display:flex;align-items:center;gap:14px;padding:12px 16px;width:100%;text-align:left}
+.plant svg{width:74px;height:89px;flex:none;overflow:visible}
+.plant .pi{flex:1;min-width:0}
+.plant .pn{font-family:var(--font-display);font-weight:var(--dw,400);font-size:calc(19px * var(--ds,1));line-height:1.2}
+.plant .pst{font-size:13px;font-weight:600;color:var(--go)}
+.plant .ps{font-size:12px;color:var(--muted);margin-top:2px}
+.pbar{height:6px;border-radius:9px;background:var(--surface-2);margin-top:8px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--go);border-radius:9px}
+@keyframes grow{0%{transform:scale(.8)}55%{transform:scale(1.12)}100%{transform:scale(1)}}
+svg.grew{animation:grow .8s ease-out;transform-origin:50% 100%}
+.pstages{display:flex;flex-direction:column;gap:6px}
+.pstage{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:12px;background:var(--surface-2)}
+.pstage svg{width:34px;height:41px;flex:none}
+.pstage.lock{opacity:.45}
+.pstage.cur{outline:2px solid var(--go)}
+.pstage b{flex:1;font-weight:600;font-size:14px}
+.pstage span{font-size:12px;color:var(--muted)}
+.pbig{display:flex;justify-content:center}
+.pbig svg{width:150px;height:180px}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:var(--body-size,15px);line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -579,6 +598,7 @@ function viewToday(){
     <div class="pct">${showPct?pct:'–'}<small>%</small></div></div>
     <div><div class="sig-msg">${msg}</div><div class="sig-sub">${sub}</div>${bar}</div></section>`;
   }
+  if(state.settings.plant!==false) h+=plantCard();
   h+=`<div class="modes" role="tablist" aria-label="루틴 모드">${state.modes.map(m=>`<button class="chip ${m.id===state.activeMode?'on':''}" data-a="mode" data-id="${m.id}" role="tab" aria-selected="${m.id===state.activeMode}">${esc(m.name)}</button>`).join('')}${state.modes.length<10?'<button class="chip add" data-a="settings">+ 모드</button>':''}</div>`;
   if(state.flags.example) h+=`<div class="banner"><div><b>예시 루틴과 할 일이 들어 있어요.</b> 그대로 써도 되고, 추천 루틴에서 주제를 골라 새로 시작해도 돼요.</div><div class="row"><button class="btn sm primary" data-a="tpl">추천 루틴 보기</button><button class="btn sm" data-a="clear-example">예시 모두 지우기</button><button class="btn sm" data-a="keep-example">그대로 쓰기</button></div></div>`;
   if(!rs.length){
@@ -856,6 +876,7 @@ function settingsSheet(){
     <div class="fl"><span class="lbl">루틴 모드 (${state.modes.length}/10)</span><span class="hint">상황별로 루틴 묶음을 따로 만들어 두고 홈에서 바꿔 쓸 수 있어요.</span><div class="list">${state.modes.map(m=>`<div class="lrow"><input class="field" value="${esc(m.name)}" data-in="mode-name" data-id="${m.id}" aria-label="모드 이름" maxlength="14"><span class="note">${state.routines.filter(r=>r.modeId===m.id).length}개</span>${state.modes.length>1?`<button class="btn sm danger" data-a="mode-del" data-id="${m.id}" data-orig="삭제">삭제</button>`:''}</div>`).join('')}</div>
       ${state.modes.length<10?`<form class="add-row" data-f="mode-add"><input class="field" id="mf-name" placeholder="예: 시험 기간" maxlength="14" required aria-label="새 모드 이름"><button class="btn" type="submit">추가</button></form>`:''}</div>
     <div class="fl"><span class="lbl">초록불 기준</span><div class="seg">${[50,60,70,80].map(v=>`<button class="${g===v?'on':''}" data-a="green" data-id="${v}">${v}%</button>`).join('')}</div><span class="hint">하루 루틴의 이만큼만 해내면 초록불이 켜져요.</span></div>
+    <button class="toggle" data-a="plant-toggle"><span class="lbl">루틴 화면에 식물 보이기</span><span class="switch ${state.settings.plant!==false?'on':''}" aria-hidden="true"></span></button>
     <button class="toggle" data-a="dtb"><span class="lbl">완료한 투두를 목록 아래로</span><span class="switch ${state.settings.doneToBottom?'on':''}" aria-hidden="true"></span></button>
     <div class="fl"><span class="lbl">휴가</span><span class="hint">휴가 기간에는 루틴 체크가 면제되고 연속 기록도 끊기지 않아요.</span><div class="list">${state.vacations.map((v,i)=>`<div class="lrow"><span style="flex:1">${fmtShort(v.from)} – ${fmtShort(v.to)}</span><button class="btn sm danger" data-a="vac-del" data-id="${i}">삭제</button></div>`).join('')}</div>
       <form class="lrow" data-f="vac-add"><input class="field" type="date" id="vf-from" required aria-label="시작일"><span>–</span><input class="field" type="date" id="vf-to" required aria-label="종료일"><button class="btn" type="submit">추가</button></form></div>
@@ -863,6 +884,51 @@ function settingsSheet(){
       <textarea class="field" id="imp" rows="3" placeholder="복사해 둔 백업을 여기에 붙여넣고 ‘불러오기’를 누르세요" aria-label="백업 붙여넣기"></textarea>
       <div class="opts"><button class="btn sm" data-a="import">불러오기</button><button class="btn sm danger" data-a="reset" data-orig="모든 기록 지우기">모든 기록 지우기</button></div></div>
     <span class="note">하루틴 v1.0 · 기록은 이 휴대폰 안에만 저장되고 어디로도 전송되지 않아요.</span>`);
+}
+
+/* ---------- plant ---------- */
+const PLANT=[{n:'씨앗',at:0},{n:'싹',at:10},{n:'새싹',at:25},{n:'어린 잎',at:50},{n:'쑥쑥 줄기',at:80},{n:'무성한 잎',at:120},{n:'꽃봉오리',at:170},{n:'꽃',at:230},{n:'열매',at:300},{n:'나무',at:400}];
+function totalChecks(){let n=0;for(const k in state.days){const c=state.days[k].checks;if(c) n+=Object.keys(c).length}return n}
+function stageOf(n){let st=0;PLANT.forEach((p,i)=>{if(n>=p.at) st=i});return st}
+function josaIGa(w){const c=w.charCodeAt(w.length-1);return w+((c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28)?'이':'가')}
+function plantName(){return (state.settings.plantName||'새싹이').slice(0,12)}
+function plantSVG(st,fx,cls){
+  const leaf=(y,dir,sz,c)=>`<path transform="translate(50 ${y}) scale(${dir*sz} ${sz})" d="M0 0C4-10 14-14 22-12 20-4 10 2 0 0Z" fill="${c}"/>`;
+  const L=[[],[[81,-1,.35],[81,1,.35]],[[75,-1,.6],[73,1,.7]],[[78,-1,.6],[76,1,.6],[67,-1,.7],[65,1,.75]],[[80,-1,.55],[76,1,.6],[70,-1,.7],[66,1,.7],[59,-1,.75],[57,1,.8]],[[80,-1,.55],[77,1,.6],[71,-1,.75],[67,1,.75],[61,-1,.85],[58,1,.85],[52,-1,.8],[50,1,.85]]];
+  const TOP=[86,79,71,63,55,47,45,44,44,44];
+  let g='';
+  if(st===0){g+=`<ellipse cx="50" cy="85" rx="5" ry="3.5" fill="#8A5A36"/><path d="M47.6 83.6q2.4-2 4.8 0" stroke="#5A3B26" stroke-width="1.1" fill="none"/>`}
+  else if(st<9){
+    const lv=L[Math.min(st,5)];
+    g+=`<path d="M50 88Q${st>=4?53:50.5} ${(88+TOP[st])/2} 50 ${TOP[st]}" stroke="#3FA45B" stroke-width="${st>=5?4:st>=3?3.2:2.6}" fill="none" stroke-linecap="round"/>`;
+    lv.forEach((l,i)=>{g+=leaf(l[0],l[1],l[2],i%2?'#3FA45B':'#59C173')});
+    if(st===6) g+=`<path d="M46 46q4 4 8 0" stroke="#3FA45B" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="40" rx="4.6" ry="7" fill="#F28AB2"/><path d="M50 34v12" stroke="#E36A98" stroke-width="1.2"/>`;
+    if(st>=7){for(let a=0;a<6;a++){const t=a*Math.PI/3;g+=`<circle cx="${(50+6.5*Math.cos(t)).toFixed(1)}" cy="${(40+6.5*Math.sin(t)).toFixed(1)}" r="5.4" fill="#FF8FB8"/>`}g+=`<circle cx="50" cy="40" r="4.4" fill="#FFD23F"/>`}
+    if(st===8) [[33,63],[67,59],[36,73]].forEach(([x,y])=>{g+=`<path d="M${x} ${y-3}v-3" stroke="#3FA45B" stroke-width="1.3"/><circle cx="${x}" cy="${y}" r="3.4" fill="#E5484D"/><circle cx="${x-1}" cy="${y-1}" r="1" fill="#FFB3B5"/>`});
+  }else{
+    g+=`<path d="M50 88C48 74 51 62 50 50M50 66l-9-8M50 60l10-9" stroke="#8A5A36" stroke-width="5.5" fill="none" stroke-linecap="round"/>`;
+    g+=`<circle cx="50" cy="34" r="20" fill="#3FA45B"/><circle cx="33" cy="44" r="14" fill="#59C173"/><circle cx="67" cy="44" r="14" fill="#59C173"/><circle cx="44" cy="22" r="11" fill="#59C173"/><circle cx="60" cy="24" r="10" fill="#4DB568"/>`;
+    [[38,36],[60,32],[48,48],[70,46],[30,48],[52,20]].slice(0,Math.max(1,fx)).forEach(([x,y])=>{g+=`<circle cx="${x}" cy="${y}" r="3.6" fill="#E5484D"/><circle cx="${x-1.1}" cy="${y-1.1}" r="1.1" fill="#FFB3B5"/>`});
+  }
+  const pot=`<ellipse cx="50" cy="88" rx="21" ry="4" fill="#5A3B26"/><rect x="25" y="86" width="50" height="8" rx="3" fill="#D98B58"/><path d="M29 94h42l-5 22H34z" fill="#C8794A"/><path d="M31 98h38" stroke="#B5683C" stroke-width="1.5"/>`;
+  return `<svg viewBox="0 0 100 120" class="${cls||''}" aria-hidden="true">${g}${pot}</svg>`;
+}
+function plantInfo(){
+  const n=totalChecks(),st=stageOf(n),fx=st===9?Math.min(6,1+Math.floor((n-400)/100)):0,nx=PLANT[st+1];
+  const p=nx?(n-PLANT[st].at)/(nx.at-PLANT[st].at):1;
+  const next=nx?`다음 단계 '${nx.n}'까지 체크 ${nx.at-n}개`:`열매 ${fx}개 · 체크 100개마다 하나씩 더 열려요`;
+  return {n,st,fx,p,next};
+}
+function plantCard(){
+  const pi=plantInfo(),cls=ui.grew?'grew':'';ui.grew=false;
+  return `<button class="card plant" data-a="plant" aria-label="내 식물 ${esc(plantName())}, ${PLANT[pi.st].n} 단계">${plantSVG(pi.st,pi.fx,cls)}<span class="pi"><span class="pn">${esc(plantName())}</span> <span class="pst">${PLANT[pi.st].n}</span><span class="ps" style="display:block">지금까지 체크 ${pi.n}개 · ${pi.next}</span><span class="pbar" style="display:block"><i style="width:${Math.round(pi.p*100)}%"></i></span></span></button>`;
+}
+function plantSheet(){
+  const pi=plantInfo();
+  openSheet('내 식물',`<div class="pbig">${plantSVG(pi.st,pi.fx)}</div>
+    <div class="fl"><label for="pl-name">식물 이름</label><input class="field" id="pl-name" value="${esc(plantName())}" maxlength="12" data-in="plant-name"></div>
+    <span class="note">루틴을 체크할 때마다 물을 한 번 준 셈이에요. 지금까지 체크 ${pi.n}개 · ${pi.next}</span>
+    <div class="pstages">${PLANT.map((p,i)=>`<div class="pstage ${i>pi.st?'lock':''} ${i===pi.st?'cur':''}">${plantSVG(i,i===9?1:0)}<b>${i+1}. ${p.n}</b><span>${i===0?'시작':`체크 ${p.at}개`}${i<=pi.st?' ✓':''}</span></div>`).join('')}</div>`);
 }
 
 /* ---------- confetti ---------- */
@@ -878,10 +944,15 @@ function confetti(){
 
 /* ---------- actions ---------- */
 function setCheck(id,fn){
-  const k=ui.sel,before=level(rateOf(k));
-  fn(day(k,true));snapshot(k);commit();
-  const after=level(rateOf(k));
-  if(after==='go'&&before!=='go'&&k<=todayKey()){confetti();toast('초록불이 켜졌어요! 오늘도 잘 해냈어요')}
+  const k=ui.sel,before=level(rateOf(k)),p0=stageOf(totalChecks());
+  fn(day(k,true));snapshot(k);
+  const p1=stageOf(totalChecks()),grew=p1>p0&&state.settings.plant!==false;
+  if(grew) ui.grew=true;
+  commit();
+  const after=level(rateOf(k)),green=after==='go'&&before!=='go'&&k<=todayKey();
+  if(green) confetti();
+  if(grew) toast(`🌱 ${josaIGa(plantName())} '${PLANT[p1].n}' 단계로 자랐어요${green?' · 초록불도 켜졌어요':''}`);
+  else if(green) toast('초록불이 켜졌어요! 오늘도 잘 해냈어요');
 }
 function swapIn(arr,item,dir,same){
   const i=arr.indexOf(item);let j=i+dir;
@@ -942,6 +1013,8 @@ const A={
   'sp':id=>{const n=Number(id);if(ui.statView==='week') ui.statAnchor=addDays(ui.statAnchor,7*n);else{const d=parseKey(ui.statAnchor);ui.statAnchor=keyOf(new Date(d.getFullYear(),d.getMonth()+n,1))}render()},
   'cal-go':id=>{ui.sel=id;ui.tab='today';render()},
   'green':id=>{state.settings.greenAt=Number(id);commit();settingsSheet()},
+  'plant':()=>plantSheet(),
+  'plant-toggle':()=>{state.settings.plant=state.settings.plant===false;commit();settingsSheet()},
   'skin':id=>{state.settings.skin=id;ui.order=false;commit();settingsSheet()},
   'dtb':()=>{state.settings.doneToBottom=!state.settings.doneToBottom;commit();settingsSheet()},
   'mode-del':(id,b)=>{const n=state.routines.filter(r=>r.modeId===id).length;if(!arm(b,n?`루틴 ${n}개와 함께 삭제`:'정말 삭제')) return;state.modes=state.modes.filter(m=>m.id!==id);state.routines=state.routines.filter(r=>r.modeId!==id);if(state.activeMode===id) state.activeMode=state.modes[0].id;commit();settingsSheet()},
@@ -988,6 +1061,7 @@ const I={
   'weight':el=>{const d=day(ui.sel,true);d.weight=el.value===''?null:Number(el.value);savedNote()},
   'retro':el=>{const d=day(ui.sel,true);d.retro=d.retro||{};d.retro[el.dataset.id]=el.value;savedNote()},
   'memo':el=>{const d=day(ui.sel,true);d.memo=el.value;savedNote()},
+  'plant-name':el=>{state.settings.plantName=el.value.trim()||'새싹이';commit()},
   'mode-name':el=>{const m=state.modes.find(x=>x.id===el.dataset.id);if(m){m.name=el.value.trim()||m.name;commit()}},
   'cat-name':el=>{const c=state.categories.find(x=>x.id===el.dataset.id);if(c){c.name=el.value.trim()||c.name;commit()}}
 };
